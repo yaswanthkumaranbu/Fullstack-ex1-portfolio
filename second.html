@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yaswanth Kumar - Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+
+
+    .image-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+   
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+   
+    h2 {
+      color: #2196f3;
+    }
+
+    #projects ul li {
+      color: #ff9800;
+    }
+
+   
+    .image-grid img {
+      border: 4px solid #333;
+      width: 500px;
+      height: 350px; 
+      margin: 10px;
+      
+      filter: grayscale(100%); 
+    }
+
+    .image-grid img:hover {
+      filter: none; 
+    }
+    
+    body{
+  background-color: white;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="index.html">About</a></li>
+        <li><a href="second.html">Projects & certifications</a></li>
+        <li><a href="third.html">Contact</a></li>
+        <li><a href="middle.html">Experience</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="projects">
+      <h2>Projects</h2>
+      <ul>
+        <li>Web application for Student’s Seating Arrangement</li>
+        <li>Dashboard creation for displaying value of temperature on Gauge using IoT</li>
+        <li>Desktop application for Electronic Machine Monitoring Machine</li>
+        <li>Web application for online voting system</li>
+      </ul>
+    </section>
+
+    <h2>Certifications</h2>
+    <div class="image-grid">
+      <img src="Certification/Certificate Programming In Java.jpg" alt="nptel">
+      <img src="Certification/Problem Solving Through Programming In C.jpg" alt="nptel">
+      <img src="Certification/srec ideation.JPG" alt="nptel">
+      <img src="Certification/krishtec.JPG" alt="nptel">
+    </div>
+  </main>
+</body>
+</html>
