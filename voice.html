@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Language Learning System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+  
+  <script src="https://cdn.jsdelivr.net/npm/google-translate-api-browser/dist/google-translate-api-browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gtts/dist/gtts.min.js"></script>
+</head>
+<body>
+  <h1>Language Learning System</h1>
+  <div id="language-form">
+    <label for="source-lang">Source Language:</label>
+    <select id="source-lang"></select>
+    <br>
+    <label for="target-lang">Target Language:</label>
+    <select id="target-lang"></select>
+    <br>
+    <label for="text-to-translate">Text to Translate:</label>
+    <input type="text" id="text-to-translate">
+    <br>
+    <button id="translate-btn">Translate</button>
+  </div>
+  <div id="translation-result" style="display: none;">
+    <h2>Translation Result:</h2>
+    <p id="translated-text"></p>
+    <button id="listen-btn">Listen to Translation</button>
+  </div>
+
+  <script>
+    const languages = {
+      af: "Afrikaans",
+      sq: "Albanian",
+      ar: "Arabic",
+      hy: "Armenian",
+      az: "Azerbaijani",
+      eu: "Basque",
+      be: "Belarusian",
+      bn: "Bengali",
+      bs: "Bosnian",
+      bg: "Bulgarian",
+      ca: "Catalan",
+      ceb: "Cebuano",
+      ny: "Chichewa",
+      "zh-CN": "Chinese (Simplified)",
+      "zh-TW": "Chinese (Traditional)",
+      co: "Corsican",
+      hr: "Croatian",
+      cs: "Czech",
+      da: "Danish",
+      nl: "Dutch",
+      en: "English",
+      eo: "Esperanto",
+      et: "Estonian",
+      tl: "Filipino",
+      fi: "Finnish",
+      fr: "French",
+      fy: "Frisian",
+      gl: "Galician",
+      ka: "Georgian",
+      de: "German",
+      el: "Greek",
+      gu: "Gujarati",
+      ht: "Haitian Creole",
+      ha: "Hausa",
+      haw: "Hawaiian",
+      iw: "Hebrew",
+      hi: "Hindi",
+      hmn: "Hmong",
+      hu: "Hungarian",
+      is: "Icelandic",
+      ig: "Igbo",
+      id: "Indonesian",
+      ga: "Irish",
+      it: "Italian",
+      ja: "Japanese",
+      jw: "Javanese",
+      kn: "Kannada",
+      kk: "Kazakh",
+      km: "Khmer",
+      ko: "Korean",
+      ku: "Kurdish (Kurmanji)",
+      ky: "Kyrgyz",
+      lo: "Lao",
+      la: "Latin",
+      lv: "Latvian",
+      lt: "Lithuanian",
+      lb: "Luxembourgish",
+      mk: "Macedonian",
+      mg: "Malagasy",
+      ms: "Malay",
+      ml: "Malayalam",
+      mt: "Maltese",
+      mi: "Maori",
+      mr: "Marathi",
+      mn: "Mongolian",
+      my: "Myanmar (Burmese)",
+      ne: "Nepali",
+      no: "Norwegian",
+      ps: "Pashto",
+      fa: "Persian",
+      pl: "Polish",
+      pt: "Portuguese",
+      ma: "Punjabi",
+      ro: "Romanian",
+      ru: "Russian",
+      sm: "Samoan",
+      gd: "Scots Gaelic",
+      sr: "Serbian",
+      st: "Sesotho",
+      sn: "Shona",
+      sd: "Sindhi",
+      si: "Sinhala",
+      sk: "Slovak",
+      sl: "Slovenian",
+      so: "Somali",
+      es: "Spanish",
+      su: "Sundanese",
+      sw: "Swahili",
+      sv: "Swedish",
+      tg: "Tajik",
+      ta: "Tamil",
+      te: "Telugu",
+      th: "Thai",
+      tr: "Turkish",
+      uk: "Ukrainian",
+      ur: "Urdu",
+      uz: "Uzbek",
+      vi: "Vietnamese",
+      cy: "Welsh",
+      xh: "Xhosa",
+      yi: "Yiddish",
+      yo: "Yoruba",
+      zu: "Zulu",
+    };
+
+    function populateLanguageSelects() {
+      const sourceLangSelect = document.getElementById('source-lang');
+      const targetLangSelect = document.getElementById('target-lang');
+
+      for (const [code, language] of Object.entries(languages)) {
+        const option = document.createElement('option');
+        option.value = code;
+        option.textContent = language;
+
+        sourceLangSelect.appendChild(option.cloneNode(true));
+        targetLangSelect.appendChild(option);
+      }
+    }
+
+    function translateText(text, sourceLang, targetLang) {
+  return new Promise((resolve, reject) => {
+    googleTranslate.translate(text, sourceLang, targetLang, function (err, translation) {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(translation.translatedText);
+      }
+    });
+  });
+}
+
+    function speakText(text, lang) {
+      const tts = new SpeechSynthesisUtterance();
+      tts.lang = lang;
+      tts.text = text;
+
+      window.speechSynthesis.speak(tts);
+    }
+
+    function handleTranslation() {
+      const sourceLangSelect = document.getElementById('source-lang');
+      const targetLangSelect = document.getElementById('target-lang');
+      const textToTranslateInput = document.getElementById('text-to-translate');
+      const translatedText = document.getElementById('translated-text');
+      const listenBtn = document.getElementById('listen-btn');
+      const translationResult = document.getElementById('translation-result');
+
+      const sourceLang = sourceLangSelect.value;
+      const targetLang = targetLangSelect.value;
+      const text = textToTranslateInput.value;
+
+      if (!text) {
+        alert('Please enter text to translate.');
+        return;
+      }
+
+      translationResult.style.display = 'block';
+
+      translateText(text, sourceLang, targetLang)
+        .then((translation) => {
+          translatedText.textContent = translation;
+          listenBtn.disabled = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          translatedText.textContent = 'Error occurred during translation.';
+          listenBtn.disabled = true;
+        });
+    }
+
+    function handleListen() {
+      const translatedText = document.getElementById('translated-text');
+      const targetLangSelect = document.getElementById('target-lang');
+      const targetLang = targetLangSelect.value;
+
+      speakText(translatedText.textContent, targetLang);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      populateLanguageSelects();
+
+      const translateBtn = document.getElementById('translate-btn');
+      const listenBtn = document.getElementById('listen-btn');
+
+      translateBtn.addEventListener('click', handleTranslation);
+      listenBtn.addEventListener('click', handleListen);
+    });
+  </script>
+</body>
+</html>
